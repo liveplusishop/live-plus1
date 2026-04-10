@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>直播加1 - 賣家後台</title>
+<link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+<div class="app">
+  <!-- 側邊欄 -->
+  <nav class="sidebar">
+    <div class="logo">
+      <span class="logo-icon">🦞</span>
+      <span>直播加1</span>
+    </div>
+    <div class="nav-items">
+      <button class="nav-item active" onclick="showTab('dashboard')">📊 數據看板</button>
+      <button class="nav-item" onclick="showTab('products')">📦 商品管理</button>
+      <button class="nav-item" onclick="showTab('streams')">🎬 直播管理</button>
+      <button class="nav-item" onclick="showTab('orders')">🧾 訂單管理</button>
+      <button class="nav-item" onclick="showTab('blacklist')">🚫 黑名單</button>
+      <button class="nav-item" onclick="showTab('settings')">⚙️ 設定</button>
+    </div>
+    <div class="plan-badge" id="planBadge">免費版</div>
+  </nav>
+
+  <!-- 主內容 -->
+  <main class="main-content">
+    <!-- 登入畫面 -->
+    <div id="loginSection" class="section">
+      <div class="auth-box">
+        <h1>🦞</h1>
+        <h2>直播加1 系統</h2>
+        <p class="subtitle">FB/IG 直播留言自動收單</p>
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="showAuth('login')">登入</button>
+          <button class="auth-tab" onclick="showAuth('register')">註冊</button>
+        </div>
+        <div id="loginForm">
+          <input type="email" id="loginEmail" placeholder="信箱" />
+          <input type="password" id="loginPassword" placeholder="密碼" />
+          <button class="btn-primary" onclick="doLogin()">登入</button>
+        </div>
+        <div id="registerForm" style="display:none">
+          <input type="text" id="regName" placeholder="姓名/暱稱" />
+          <input type="email" id="regEmail" placeholder="信箱" />
+          <input type="password" id="regPassword" placeholder="密碼" />
+          <button class="btn-primary" onclick="doRegister()">註冊</button>
+        </div>
+        <p class="error-msg" id="authError"></p>
+      </div>
+    </div>
+
+    <!-- 數據看板 -->
+    <div id="dashboardSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>📊 數據看板</h2>
+        <div class="header-actions">
+          <button class="btn-secondary" onclick="refreshStats()">🔄 刷新</button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="statTotalOrders">0</div>
+          <div class="stat-label">總訂單</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statPending">0</div>
+          <div class="stat-label">待處理</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statPaid">0</div>
+          <div class="stat-label">已付款</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statRevenue">$0</div>
+          <div class="stat-label">銷售額</div>
+        </div>
+      </div>
+      <div class="dashboard-row">
+        <div class="panel">
+          <h3>🏆 熱銷商品</h3>
+          <table class="mini-table" id="topProductsTable">
+            <tr><th>商品名</th><th>數量</th><th>銷售額</th></tr>
+          </table>
+        </div>
+        <div class="panel">
+          <h3>📈 近7天趨勢</h3>
+          <div id="dailyChart" class="mini-chart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 商品管理 -->
+    <div id="productsSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>📦 商品管理</h2>
+        <button class="btn-primary" onclick="showProductModal()">+ 新增商品</button>
+      </div>
+      <div class="upgrade-notice" id="productLimitNotice" style="display:none">
+        ⚠️ 已達免費版商品上限（10個）<button class="btn-upgrade" onclick="showUpgrade()">升級進階版</button>
+      </div>
+      <table class="data-table" id="productsTable">
+        <tr><th>商品名</th><th>代碼</th><th>價格</th><th>庫存</th><th>操作</th></tr>
+      </table>
+    </div>
+
+    <!-- 直播管理 -->
+    <div id="streamsSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>🎬 直播/貼文管理</h2>
+        <button class="btn-primary" onclick="showStreamModal()">+ 新增直播</button>
+      </div>
+      <div class="panel">
+        <h3>FB 授權設定</h3>
+        <div class="form-row">
+          <input type="text" id="fbPageId" placeholder="FB 粉絲專頁 ID" />
+          <input type="text" id="fbToken" placeholder="FB Access Token" />
+          <button class="btn-secondary" onclick="saveFBToken()">儲存</button>
+        </div>
+        <p class="hint">到 <a href="https://developers.facebook.com" target="_blank">Facebook Developers</a> 建立應用取得 Token</p>
+      </div>
+      <div id="streamsList"></div>
+    </div>
+
+    <!-- 訂單管理 -->
+    <div id="ordersSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>🧾 訂單管理</h2>
+        <div class="header-actions">
+          <select id="orderStatusFilter" onchange="loadOrders()">
+            <option value="">全部狀態</option>
+            <option value="pending">待處理</option>
+            <option value="paid">已付款</option>
+            <option value="shipped">已出貨</option>
+            <option value="completed">已完成</option>
+            <option value="cancelled">已取消</option>
+          </select>
+          <select id="orderStreamFilter">
+            <option value="">全部直播</option>
+          </select>
+          <button class="btn-secondary" onclick="exportOrders()">📥 匯出Excel</button>
+          <button class="btn-secondary" onclick="loadOrders()">🔄 刷新</button>
+        </div>
+      </div>
+      <table class="data-table" id="ordersTable">
+        <tr><th>訂單編號</th><th>買家</th><th>商品</th><th>數量</th><th>金額</th><th>狀態</th><th>時間</th><th>操作</th></tr>
+      </table>
+    </div>
+
+    <!-- 黑名單 -->
+    <div id="blacklistSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>🚫 棄單黑名單</h2>
+        <div id="blacklistUpgrade" class="upgrade-notice" style="display:none">
+          🚫 黑名單功能為進階版專屬<button class="btn-upgrade" onclick="showUpgrade()">升級進階版</button>
+        </div>
+      </div>
+      <table class="data-table" id="blacklistTable">
+        <tr><th>FB用戶ID</th><th>原因</th><th>加入時間</th><th>操作</th></tr>
+      </table>
+    </div>
+
+    <!-- 設定 -->
+    <div id="settingsSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>⚙️ 帳戶設定</h2>
+      </div>
+      <div class="panel">
+        <h3>我的方案</h3>
+        <div class="plan-info" id="planInfo">
+          <div class="plan-name">免費版</div>
+          <div class="plan-features">
+            <p>✅ 1個粉絲專頁</p>
+            <p>✅ 50筆訂單/月</p>
+            <p>✅ 10個商品</p>
+            <p>❌ 數據看板</p>
+            <p>❌ 黑名單</p>
+            <p>❌ 自動催款</p>
+          </div>
+        </div>
+        <button class="btn-upgrade-large" onclick="showUpgrade()">升級進階版 $599/月</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 新增/編輯商品 Modal -->
+<div class="modal" id="productModal">
+  <div class="modal-content">
+    <h3 id="productModalTitle">新增商品</h3>
+    <input type="hidden" id="editProductId" />
+    <input type="text" id="pName" placeholder="商品名稱 *" />
+    <input type="text" id="pCode" placeholder="商品代碼（作為關鍵字，如：A001）" />
+    <input type="number" id="pPrice" placeholder="價格 *（元）" />
+    <input type="number" id="pStock" placeholder="庫存數量" />
+    <textarea id="pSpecs" placeholder="規格說明（選填）&#10;例如：紅色/M、藍色/L"></textarea>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('productModal')">取消</button>
+      <button class="btn-primary" onclick="saveProduct()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增直播 Modal -->
+<div class="modal" id="streamModal">
+  <div class="modal-content">
+    <h3>新增直播/貼文</h3>
+    <input type="text" id="sTitle" placeholder="直播標題 *" />
+    <input type="text" id="sPostId" placeholder="FB 貼文 ID（貼文網址最後一段數字）" />
+    <input type="text" id="sKeywords" placeholder="關鍵字（多個用逗號分隔）" value="+1" />
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('streamModal')">取消</button>
+      <button class="btn-primary" onclick="saveStream()">建立直播</button>
+    </div>
+  </div>
+</div>
+
+<!-- 編輯訂單 Modal -->
+<div class="modal" id="orderModal">
+  <div class="modal-content">
+    <h3>編輯訂單</h3>
+    <input type="hidden" id="editOrderId" />
+    <input type="text" id="oBuyerName" placeholder="買家姓名" />
+    <input type="text" id="oBuyerPhone" placeholder="電話" />
+    <textarea id="oBuyerAddress" placeholder="收件地址"></textarea>
+    <select id="oStatus">
+      <option value="pending">待處理</option>
+      <option value="paid">已付款</option>
+      <option value="shipped">已出貨</option>
+      <option value="completed">已完成</option>
+      <option value="cancelled">已取消</option>
+    </select>
+    <textarea id="oNote" placeholder="備註"></textarea>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('orderModal')">取消</button>
+      <button class="btn-primary" onclick="saveOrder()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 升級 Modal -->
+<div class="modal" id="upgradeModal">
+  <div class="modal-content">
+    <h3>🦞 升級進階版</h3>
+    <div class="upgrade-features">
+      <p>✅ 無限直播/貼文</p>
+      <p>✅ 無限訂單</p>
+      <p>✅ 無限商品</p>
+      <p>✅ 5組關鍵字</p>
+      <p>✅ 數據看板</p>
+      <p>✅ 棄單黑名單</p>
+      <p>✅ 自動催款通知</p>
+    </div>
+    <div class="upgrade-price">$599 <span>/月</span></div>
+    <p class="upgrade-contact">請聯繫 IS愛思 購買進階版</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('upgradeModal')">關閉</button>
+      <button class="btn-primary" onclick="activatePremium()">我已付款，啟用進階版</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

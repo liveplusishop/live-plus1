@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>填寫收件資料 - 直播加1</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'PingFang TC', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo span { font-size: 48px; }
+.logo h1 { font-size: 24px; margin-top: 10px; color: #1e293b; }
+.logo p { color: #64748b; font-size: 14px; margin-top: 5px; }
+
+.order-box {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.order-box h3 { font-size: 16px; margin-bottom: 10px; color: #475569; }
+.order-detail { font-size: 14px; color: #64748b; margin: 5px 0; }
+
+.form-group { margin-bottom: 15px; }
+label { display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+label .required { color: #ef4444; }
+
+input, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: 0.2s;
+}
+
+input:focus, textarea:focus { border-color: #6366f1; }
+textarea { height: 80px; resize: vertical; }
+
+.btn-submit {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-top: 10px;
+}
+
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.success-box {
+  text-align: center;
+  padding: 30px 20px;
+}
+.success-icon { font-size: 64px; }
+.success-box h2 { margin: 15px 0 10px; color: #059669; }
+.success-box p { color: #64748b; }
+
+.error { color: #ef4444; font-size: 13px; margin-top: 5px; min-height: 18px; }
+
+.loading { text-align: center; padding: 40px; color: #64748b; }
+</style>
+</head>
+<body>
+
+<div class="card" id="app">
+  <div v-if="loading" class="loading">載入中...</div>
+  <div v-else-if="submitted" class="success-box">
+    <div class="success-icon">✅</div>
+    <h2>資料已送出！</h2>
+    <p>賣家收到訂單後會盡快與您聯繫<br>訂單編號：<strong>{{ orderId }}</strong></p>
+  </div>
+  <div v-else-if="error" class="error-box">
+    <p style="color:#ef4444;text-align:center">{{ error }}</p>
+  </div>
+  <div v-else>
+    <div class="logo">
+      <span>🦞</span>
+      <h1>直播加1 收件表單</h1>
+      <p>請填寫收件資料，完成訂購</p>
+    </div>
+
+    <div class="order-box">
+      <h3>📦 訂單資訊</h3>
+      <div class="order-detail"><strong>商品：</strong>{{ order.product_name || '直播加1商品' }}</div>
+      <div class="order-detail"><strong>數量：</strong>{{ order.quantity }} 件</div>
+      <div class="order-detail"><strong>金額：</strong>${{ (order.total_price || 0).toLocaleString() }}</div>
+      <div class="order-detail"><strong>買家：</strong>{{ order.fb_user_name || '-' }}</div>
+    </div>
+
+    <form @submit.prevent="submitForm">
+      <div class="form-group">
+        <label>姓名 <span class="required">*</span></label>
+        <input type="text" v-model="form.buyer_name" placeholder="請輸入真實姓名" required />
+      </div>
+      <div class="form-group">
+        <label>電話 <span class="required">*</span></label>
+        <input type="tel" v-model="form.buyer_phone" placeholder="0912-345-678" required />
+      </div>
+      <div class="form-group">
+        <label>收件地址 <span class="required">*</span></label>
+        <textarea v-model="form.buyer_address" placeholder="縣市/區/巷弄號/樓層" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>備註（選填）</label>
+        <input type="text" v-model="form.note" placeholder="例如：需要發票、尺寸要求等" />
+      </div>
+      <div class="error">{{ errMsg }}</div>
+      <button type="submit" class="btn-submit" :disabled="submitting">
+        {{ submitting ? '送出中...' : '✅ 確認送出' }}
+      </button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+<script>
+const API = 'http://localhost:5050/api';
+
+new Vue({
+  el: '#app',
+  data: {
+    orderId: '',
+    order: {},
+    form: { buyer_name: '', buyer_phone: '', buyer_address: '', note: '' },
+    loading: true,
+    submitted: false,
+    submitting: false,
+    error: '',
+    errMsg: ''
+  },
+  async mounted() {
+    const path = window.location.pathname;
+    const id = path.split('/buyer/')[1] || new URLSearchParams(window.location.search).get('order_id');
+    if (!id) { this.error = '找不到訂單，請確認連結是否正確'; this.loading = false; return; }
+    this.orderId = id;
+
+    try {
+      const res = await fetch(`${API}/buyer/order/${id}`);
+      if (!res.ok) { this.error = '找不到此訂單'; this.loading = false; return; }
+      const data = await res.json();
+      this.order = data.order;
+      this.loading = false;
+    } catch(e) {
+      this.error = '載入失敗，請稍後再試';
+      this.loading = false;
+    }
+  },
+  methods: {
+    async submitForm() {
+      this.errMsg = '';
+      if (!this.form.buyer_name || !this.form.buyer_phone || !this.form.buyer_address) {
+        this.errMsg = '請填寫所有必填欄位';
+        return;
+      }
+
+      this.submitting = true;
+      try {
+        const res = await fetch(`${API}/buyer/submit`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ order_id: this.orderId, ...this.form })
+        });
+        const data = await res.json();
+        if (!res.ok) { this.errMsg = data.error || '送出失敗'; this.submitting = false; return; }
+        this.submitted = true;
+      } catch(e) {
+        this.errMsg = '網路錯誤，請稍後再試';
+      }
+      this.submitting = false;
+    }
+  }
+});
+</script>
+</body>
+</html>

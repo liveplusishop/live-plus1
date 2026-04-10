@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>直播加1 - FB/IG 直播留言自動收單系統</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', 'PingFang TC', sans-serif; background: #0f172a; color: white; overflow-x: hidden; }
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  background: radial-gradient(ellipse at top, #1e1b4b 0%, #0f172a 70%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 50%);
+  animation: pulse 8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.hero-content { position: relative; z-index: 1; max-width: 700px; }
+
+.logo-big { font-size: 64px; margin-bottom: 20px; }
+
+h1 { font-size: 48px; font-weight: bold; margin-bottom: 15px; line-height: 1.2; }
+h1 span { background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.subtitle { font-size: 20px; color: #94a3b8; margin-bottom: 30px; line-height: 1.6; }
+
+.cta-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+
+.btn-main {
+  background: linear-gradient(135deg, #6366f1, #764ba2);
+  color: white;
+  border: none;
+  padding: 16px 36px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.3s;
+  box-shadow: 0 8px 30px rgba(99,102,241,0.4);
+}
+
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,0.5); }
+
+.btn-secondary {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 16px 36px;
+  border-radius: 12px;
+  font-size: 18px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.btn-secondary:hover { background: rgba(255,255,255,0.15); }
+
+/* 功能展示 */
+.features {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.features h2 { font-size: 32px; text-align: center; margin-bottom: 40px; }
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 30px;
+  transition: 0.3s;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-4px);
+}
+
+.feature-icon { font-size: 40px; margin-bottom: 15px; }
+.feature-card h3 { font-size: 18px; margin-bottom: 10px; }
+.feature-card p { color: #94a3b8; font-size: 14px; line-height: 1.6; }
+
+/* 方案 */
+.pricing {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.pricing h2 { font-size: 32px; text-align: center; margin-bottom: 40px; }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.plan-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 35px;
+}
+
+.plan-card.featured {
+  border-color: #6366f1;
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(118,75,162,0.1));
+  box-shadow: 0 0 40px rgba(99,102,241,0.2);
+  position: relative;
+}
+
+.plan-card.featured::before {
+  content: '最划算';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.plan-name { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+.plan-price { font-size: 42px; font-weight: bold; color: #6366f1; margin-bottom: 20px; }
+.plan-price span { font-size: 18px; color: #94a3b8; font-weight: normal; }
+.plan-features { list-style: none; }
+.plan-features li { padding: 8px 0; font-size: 15px; color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.plan-features li::before { content: '✅ '; }
+
+/* 流程 */
+.how-it-works {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.how-it-works h2 { font-size: 32px; text-align: center; margin-bottom: 40px; }
+
+.steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 30px;
+  left: 15%;
+  right: 15%;
+  height: 2px;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+}
+
+.step {
+  text-align: center;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.step-num {
+  width: 60px; height: 60px;
+  background: linear-gradient(135deg, #6366f1, #764ba2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 auto 15px;
+}
+
+.step h3 { font-size: 16px; margin-bottom: 8px; }
+.step p { color: #94a3b8; font-size: 14px; }
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 14px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+footer span { margin: 0 10px; }
+
+/* 響應式 */
+@media (max-width: 768px) {
+  h1 { font-size: 32px; }
+  .subtitle { font-size: 16px; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .steps { flex-direction: column; gap: 30px; }
+  .steps::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="logo-big">🦞</div>
+    <h1>直播加<span>1</span> 系統</h1>
+    <p class="subtitle">
+      Facebook / Instagram 直播留言自動收單<br>
+      觀眾留言 +1 → 系統自動建立訂單 → 買家填單完成購買<br>
+      一套系統搞定直播銷售，省時又省力！
+    </p>
+    <div class="cta-group">
+      <a href="dashboard" class="btn-main">🚀 免費開始使用</a>
+      <a href="#pricing" class="btn-secondary">查看方案</a>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <h2>✨ 強大功能，全方位支援直播銷售</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🔄</div>
+      <h3>自動抓取留言</h3>
+      <p>串接 Facebook Graph API，即時抓取直播/貼文留言，自動辨識 +1 關鍵字，零漏單。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <h3>商品管理</h3>
+      <p>支援多規格商品（顏色、尺寸），即時庫存管理，超賣保護，直播結束自動停止收單。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧾</div>
+      <h3>自動建訂單</h3>
+      <p>觀眾留言 +1 → 系統自動建立訂單，買家收到填單連結，填完收件資料才算完成。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📥</div>
+      <h3>Excel 一鍵匯出</h3>
+      <p>直播結束後一鍵匯出完整訂單報表，交給物流出貨超方便。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>數據看板</h3>
+      <p>即時掌握銷售額、訂單數、熱銷商品，輕鬆分析每場直播成效。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🚫</div>
+      <h3>棄單黑名單</h3>
+      <p>記錄棄單買家，一鍵封鎖，避免資源浪費。</p>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works">
+  <h2>💡 三步驟，直播收單輕鬆搞定</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>建立直播</h3>
+      <p>設定直播標題、FB 貼文、關鍵字</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>觀眾留言</h3>
+      <p>觀眾在 FB 直播留言 +1 或商品代碼</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>自動收單</h3>
+      <p>系統自動建立訂單，買家填單完成</p>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <h2>💰 選擇適合你的方案</h2>
+  <div class="pricing-grid">
+    <div class="plan-card">
+      <div class="plan-name">免費版</div>
+      <div class="plan-price">$0 <span>/永久</span></div>
+      <ul class="plan-features">
+        <li>1 個 FB 粉絲專頁</li>
+        <li>每月 50 筆訂單</li>
+        <li>最多 10 個商品</li>
+        <li>1 組關鍵字</li>
+        <li>Excel 匯出</li>
+      </ul>
+      <a href="dashboard" class="btn-main" style="display:block;text-align:center;margin-top:20px;padding:12px;">免費開始</a>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-name">🏆 進階版</div>
+      <div class="plan-price">$599 <span>/月</span></div>
+      <ul class="plan-features">
+        <li>無限 FB 粉絲專頁</li>
+        <li>每月訂單無上限</li>
+        <li>商品數量無上限</li>
+        <li>5 組關鍵字</li>
+        <li>數據分析看板</li>
+        <li>棄單黑名單</li>
+        <li>自動催款通知</li>
+      </ul>
+      <a href="dashboard" class="btn-main" style="display:block;text-align:center;margin-top:20px;padding:12px;">立即升級</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>🦞</span>
+  <span>直播加1系統</span>
+  <span>|</span>
+  <span>Powered by IS愛思 / 小龍蝦AI</span>
+</footer>
+
+</body>
+</html>

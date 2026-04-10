@@ -1,0 +1,13 @@
+# Render.com 部署設定 - 直播加1系統
+services:
+  - type: web
+    name: live-plus1
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: cd backend && python app.py
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
