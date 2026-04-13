@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<!--
+  直播加1 - 方案比較頁
+  版本：v1.1 (2026-04-14)
+  說明：新增收費方案比較頁
+-->
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>直播加1 - 方案比較</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'PingFang TC', sans-serif;
+      background: #0f172a;
+      color: white;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      text-align: center;
+    }
+    header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    header p { font-size: 1.2em; opacity: 0.9; }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 40px;
+    }
+
+    /* 定價卡片 */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+
+    .pricing-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: 0.3s;
+      position: relative;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-10px);
+      border-color: #667eea;
+    }
+
+    .pricing-card.featured {
+      background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2));
+      border: 2px solid #667eea;
+    }
+
+    .badge {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .plan-name {
+      font-size: 1.5em;
+      margin: 20px 0 10px;
+      color: #e2e8f0;
+    }
+
+    .price {
+      font-size: 3em;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    .price span { font-size: 0.4em; color: #94a3b8; }
+    .price-free { color: #4ade80; }
+
+    .period {
+      color: #94a3b8;
+      font-size: 1em;
+      margin-bottom: 30px;
+    }
+
+    .features-list {
+      list-style: none;
+      text-align: left;
+      margin: 30px 0;
+    }
+    .features-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+    }
+    .features-list li::before {
+      content: '✓';
+      color: #4ade80;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .features-list li.disabled {
+      color: #64748b;
+      text-decoration: line-through;
+    }
+    .features-list li.disabled::before {
+      content: '✗';
+      color: #64748b;
+    }
+
+    .device-info {
+      background: rgba(102,126,234,0.2);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 0.95em;
+    }
+
+    .btn {
+      display: block;
+      padding: 15px 30px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1em;
+      transition: 0.3s;
+      margin-top: 20px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(102,126,234,0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid #667eea;
+      color: #667eea;
+    }
+    .btn-secondary:hover {
+      background: rgba(102,126,234,0.1);
+    }
+
+    /* 比較表 */
+    .comparison-table {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 40px;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 15px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .comparison-table th {
+      background: rgba(102,126,234,0.2);
+      font-weight: bold;
+    }
+
+    .comparison-table th:first-child,
+    .comparison-table td:first-child {
+      text-align: left;
+    }
+
+    .check { color: #4ade80; font-size: 1.2em; }
+    .cross { color: #64748b; }
+
+    /* FAQ */
+    .faq-section {
+      margin-top: 60px;
+    }
+    .faq-item {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+    .faq-q {
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+    .faq-a {
+      color: #94a3b8;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: #64748b;
+    }
+
+    .links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .links a {
+      color: #667eea;
+      text-decoration: none;
+    }
+    .links a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="assets/logo.jpg" alt="愛直播" style="max-width:120px; margin-bottom:15px;" onerror="this.style.display='none'">
+  <h1>直播加1 方案比較</h1>
+  <p>選擇適合你的方案，開始直播收單</p>
+</header>
+
+<div class="container">
+  <h2 class="section-title">💰 收費方案</h2>
+
+  <div class="pricing-grid">
+    <!-- 免費版 -->
+    <div class="pricing-card">
+      <h3 class="plan-name">🌱 免費版</h3>
+      <div class="price price-free">$0</div>
+      <div class="period">永久免費</div>
+      
+      <div class="device-info">📱 1 台設備</div>
+      
+      <ul class="features-list">
+        <li>每月 50 單</li>
+        <li>最多 10 個商品</li>
+        <li>FB 直播支援</li>
+        <li>基本訂單管理</li>
+        <li class="disabled">Excel 匯出</li>
+        <li class="disabled">優先客服</li>
+      </ul>
+      
+      <a href="./" class="btn btn-secondary">免費開始</a>
+    </div>
+
+    <!-- 進階版 -->
+    <div class="pricing-card featured">
+      <div class="badge">⭐ 熱門</div>
+      <h3 class="plan-name">🚀 進階版</h3>
+      <div class="price">$299<span>/月</span></div>
+      <div class="period">每月繳費</div>
+      
+      <div class="device-info">📱 1 台設備</div>
+      
+      <ul class="features-list">
+        <li>每月 500 單</li>
+        <li>最多 50 個商品</li>
+        <li>FB/IG 直播支援</li>
+        <li>完整訂單管理</li>
+        <li>Excel 匯出</li>
+        <li>LINE 客服支援</li>
+      </ul>
+      
+      <a href="upgrade.html?plan=pro" class="btn btn-primary">升級進階版</a>
+    </div>
+
+    <!-- 旗艦版 -->
+    <div class="pricing-card">
+      <h3 class="plan-name">💎 旗艦版</h3>
+      <div class="price">$599<span>/月</span></div>
+      <div class="period">每月繳費</div>
+      
+      <div class="device-info">💻 3 台設備同步</div>
+      
+      <ul class="features-list">
+        <li><strong>無限訂單</strong></li>
+        <li><strong>無限商品</strong></li>
+        <li>FB/IG/LINE 直播</li>
+        <li>完整訂單管理</li>
+        <li>Excel 匯出</li>
+        <li><strong>VIP 優先客服</strong></li>
+      </ul>
+      
+      <a href="upgrade.html?plan=enterprise" class="btn btn-primary">升級旗艦版</a>
+    </div>
+  </div>
+
+  <!-- 詳細比較表 -->
+  <h2 class="section-title">📊 功能詳細比較</h2>
+  
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>功能</th>
+        <th>免費版</th>
+        <th>進階版</th>
+        <th>旗艦版</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>同時使用設備數</td>
+        <td>1 台</td>
+        <td>1 台</td>
+        <td><strong>3 台</strong></td>
+      </tr>
+      <tr>
+        <td>每月訂單上限</td>
+        <td>50 單</td>
+        <td>500 單</td>
+        <td><strong>無限</strong></td>
+      </tr>
+      <tr>
+        <td>商品數量</td>
+        <td>10 個</td>
+        <td>50 個</td>
+        <td><strong>無限</strong></td>
+      </tr>
+      <tr>
+        <td>Facebook 直播</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>Instagram 直播</td>
+        <td class="cross">✗</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>LINE 直播</td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>自動回覆</td>
+        <td class="cross">✗</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>Excel 匯出</td>
+        <td class="cross">✗</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>數據報表</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>優先客服</td>
+        <td class="cross">✗</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>第三方整合</td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="check">✓</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <h2 class="section-title">❓ 常見問題</h2>
+    
+    <div class="faq-item">
+      <div class="faq-q">Q：設備數是什麼意思？</div>
+      <div class="faq-a">A：同一個帳號可以同時登入的設備數量。例如旗艦版可以讓你、老闆、員工同時使用，資料即時同步。</div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-q">Q：訂單上限怎麼計算？</div>
+      <div class="faq-a">A：每個月重新計算。每月 1 號凌晨 00:00 自動重置當月訂單數。</div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-q">Q：可以切換方案嗎？</div>
+      <div class="faq-a">A：可以隨時升級或降級。升級立即生效，降級於下次繳費日生效。</div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-q">Q：如何付款？</div>
+      <div class="faq-a">A：支援信用卡（VISA/MasterCard/JCB）、LINE Pay、街口支付等多種付款方式。</div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-q">Q：可以退款嗎？</div>
+      <div class="faq-a">A：付款後 7 天內如有不滿意，可申請全額退款。超過 7 天則不予退款。</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 直播加1 | 愛直播出品</p>
+  <div class="links">
+    <a href="./">← 返回首頁</a>
+    <a href="demo.html">展示頁</a>
+    <a href="help.html">使用指南</a>
+  </div>
+</footer>
+
+</body>
+</html>
