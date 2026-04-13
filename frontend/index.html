@@ -39,7 +39,12 @@ body { font-family: 'Segoe UI', 'PingFang TC', sans-serif; background: #0f172a; 
 
 .hero-content { position: relative; z-index: 1; max-width: 700px; }
 
-.logo-big { font-size: 64px; margin-bottom: 20px; }
+.logo-img {
+  max-width: 200px;
+  max-height: 80px;
+  margin-bottom: 20px;
+  object-fit: contain;
+}
 
 h1 { font-size: 48px; font-weight: bold; margin-bottom: 15px; line-height: 1.2; }
 h1 span { background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -232,7 +237,7 @@ footer span { margin: 0 10px; }
 
 <section class="hero">
   <div class="hero-content">
-    <div class="logo-big">🦞</div>
+    <img src="assets/logo.jpg" alt="愛直播" class="logo-img">
     <h1>直播加<span>1</span> 系統</h1>
     <p class="subtitle">
       Facebook / Instagram 直播留言自動收單<br>
