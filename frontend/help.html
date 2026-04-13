@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>直播加1 - 使用指南</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 20px; text-align: center; border-radius: 16px; margin-bottom: 30px; }
+    header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    header p { font-size: 1.2em; opacity: 0.9; }
+    .logo { display: block; margin: 0 auto 20px; max-width: 150px; }
+    .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .section h2 { color: #667eea; font-size: 1.8em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0; }
+    .section h3 { color: #764ba2; font-size: 1.3em; margin: 20px 0 10px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+    th { background: #f8f9fa; font-weight: 600; color: #555; }
+    tr:hover { background: #f8f9fa; }
+    .demo-box { background: #f8f9ff; border-left: 4px solid #667eea; padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+    .step { display: flex; align-items: flex-start; margin: 20px 0; }
+    .step-num { background: linear-gradient(135deg, #667eea, #764ba2); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; margin-right: 15px; }
+    .step-content { flex: 1; }
+    .step-content h4 { color: #333; margin-bottom: 5px; }
+    .flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+    .flow-box { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 20px; border-radius: 10px; text-align: center; min-width: 120px; }
+    .flow-arrow { color: #667eea; font-size: 1.5em; }
+    .faq { margin: 10px 0; }
+    .faq-q { font-weight: 600; color: #667eea; margin: 10px 0 5px; }
+    .faq-a { color: #666; padding-left: 15px; }
+    .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+    .link-card { background: #f8f9ff; padding: 20px; border-radius: 10px; text-align: center; transition: transform 0.2s; }
+    .link-card:hover { transform: translateY(-3px); }
+    .link-card h4 { color: #667eea; margin-bottom: 10px; }
+    .link-card a { color: #764ba2; text-decoration: none; font-weight: 600; }
+    footer { text-align: center; padding: 30px; color: #888; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="assets/logo.jpg" alt="愛直播" class="logo" onerror="this.style.display='none'">
+      <h1>📖 直播加1 使用指南</h1>
+      <p>完整的系統設定與操作範例</p>
+    </header>
+
+    <div class="section">
+      <h2>📌 一、FB 授權設定</h2>
+      <p>在使用系統之前，需要先綁定你的 Facebook 粉絲專頁</p>
+      
+      <h3>需要的資料：</h3>
+      <table>
+        <tr><th>欄位</th><th>說明</th></tr>
+        <tr><td>粉絲專頁 ID</td><td>FB 粉絲團的數字 ID（15-16位數）</td></tr>
+        <tr><td>Access Token</td><td>FB 長期權杖（有效期幾個月）</td></tr>
+      </table>
+
+      <h3>如何取得 Access Token：</h3>
+      <div class="step"><div class="step-num">1</div><div class="step-content"><h4>進入 FB Developer</h4>前往 <a href="https://developers.facebook.com/" target="_blank">developers.facebook.com</a></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><h4>選擇你的粉絲專頁 App</h4>或建立一個新的 App</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><h4>取得長期權杖</h4>使用「取得權杖」→「取得頁面存取權杖」</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><h4>複製貼上</h4>將取得的 Token 複製到系統設定中</div></div>
+    </div>
+
+    <div class="section">
+      <h2>📦 二、新增商品（商品管理）</h2>
+      <p>在直播中販售的商品需要先新增到系統</p>
+
+      <h3>範例商品 1：兒童智能手錶</h3>
+      <table>
+        <tr><th>欄位</th><th>範例填寫</th></tr>
+        <tr><td>商品名稱</td><td>兒童智能手錶 GPS 定位</td></tr>
+        <tr><td>商品價格</td><td>599</td></tr>
+        <tr><td>商品庫存</td><td>100</td></tr>
+        <tr><td>商品描述</td><td>兒童安全定位手錶，支援 GPS 追蹤、SOS 求救</td></tr>
+        <tr><td>關鍵字</td><td>手錶,兒童,GPS,定位</td></tr>
+      </table>
+
+      <h3>範例商品 2：迷你投影機</h3>
+      <table>
+        <tr><th>欄位</th><th>範例填寫</th></tr>
+        <tr><td>商品名稱</td><td>迷你投影機 1080P</td></tr>
+        <tr><td>商品價格</td><td>1299</td></tr>
+        <tr><td>商品庫存</td><td>50</td></tr>
+        <tr><td>商品描述</td><td>攜帶型投影機，支援手機同屏</td></tr>
+        <tr><td>關鍵字</td><td>投影機,投影,家庭影院</td></tr>
+      </table>
+
+      <h3>範例商品 3：網路攝影機</h3>
+      <table>
+        <tr><th>欄位</th><th>範例填寫</th></tr>
+        <tr><td>商品名稱</td><td>網路攝影機 1080P 雲台版</td></tr>
+        <tr><td>商品價格</td><td>899</td></tr>
+        <tr><td>商品庫存</td><td>80</td></tr>
+        <tr><td>商品描述</td><td>遠端監控、雙向語音、夜視功能</td></tr>
+        <tr><td>關鍵字</td><td>攝影機,監控,攝像頭,IPCAM</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>🎬 三、新增直播（直播管理）</h2>
+      <p>每次直播前需要建立一個直播活動</p>
+
+      <table>
+        <tr><th>欄位</th><th>範例填寫</th><th>說明</th></tr>
+        <tr><td>直播標題</td><td>🎉 愛直播 母親節特賣會</td><td>觀眾看到的標題</td></tr>
+        <tr><td>直播日期</td><td>2026-05-10</td><td>直播日期</td></tr>
+        <tr><td>直播時間</td><td>20:00</td><td>直播開始時間</td></tr>
+        <tr><td>直播連結</td><td>https://www.facebook.com/xxx/videos/xxx</td><td>FB 直播網址</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>🛒 四、觀眾下單流程</h2>
+      <p>系統自動化的訂單收集流程</p>
+
+      <div class="flow">
+        <div class="flow-box">🎙️ 直播開始<br>說「留言+1搶購」</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">📝 觀眾留言<br>「+1」</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">📱 系統自動<br>發送填單連結</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">✅ 觀眾填寫<br>收件資料</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">📦 賣家查看<br>訂單出貨</div>
+      </div>
+
+      <div class="demo-box">
+        <strong>👤 觀眾收到的買家表單內容：</strong><br><br>
+        商品名稱：兒童智能手錶 GPS 定位<br>
+        商品價格：NT$599<br>
+        <br>
+        收件人：陳小明<br>
+        電話：0912345678<br>
+        地址：台北市信義區忠孝東路123號<br>
+        備註：
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>❓ 五、常見問題</h2>
+      
+      <div class="faq">
+        <div class="faq-q">Q：Access Token 過期怎麼辦？</div>
+        <div class="faq-a">A：需要到 FB Developer 重新取得新的 Token，然後更新系統設定</div>
+      </div>
+      
+      <div class="faq">
+        <div class="faq-q">Q：觀眾不會用怎麼辦？</div>
+        <div class="faq-a">A：把展示頁（demo.html）分享給他們看操作流程</div>
+      </div>
+      
+      <div class="faq">
+        <div class="faq-q">Q：可以綁定多個 FB 粉絲團嗎？</div>
+        <div class="faq-a">A：目前一個帳號綁定一個粉絲團</div>
+      </div>
+      
+      <div class="faq">
+        <div class="faq-q">Q：留言識別不出來怎麼辦？</div>
+        <div class="faq-a">A：檢查 FB 授權是否正確，或手動新增關鍵字（如「+1」、「要」）</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔗 相關連結</h2>
+      <div class="links">
+        <div class="link-card">
+          <h4>🎛️ 賣家後台</h4>
+          <a href="./" target="_blank">前往後台管理</a>
+        </div>
+        <div class="link-card">
+          <h4>📄 展示頁</h4>
+          <a href="demo.html" target="_blank">系統介紹展示</a>
+        </div>
+        <div class="link-card">
+          <h4>📱 買家填單</h4>
+          <a href="buyer.html" target="_blank">觀眾下單填單</a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>🚀 直播加1系統 | 愛直播 © 2026</p>
+      <p>技術支援請聯繫系統管理員</p>
+    </footer>
+  </div>
+</body>
+</html>
