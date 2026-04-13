@@ -156,6 +156,7 @@ body {
 .auth-box input:focus { border-color: var(--primary); }
 
 .error-msg { color: var(--danger); font-size: 14px; margin-top: 10px; min-height: 20px; }
+.success-msg { color: var(--success); font-size: 14px; margin-top: 10px; min-height: 20px; }
 
 /* 按鈕 */
 .btn-primary {

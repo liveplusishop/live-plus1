@@ -17,18 +17,31 @@ async function doLogin() {
   const password = document.getElementById('loginPassword').value;
   if (!email || !password) return showErr('請填寫信箱和密碼');
 
-  const res = await fetch(`${API}/auth/login`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({email, password})
-  });
-  const data = await res.json();
-  if (!data.success) return showErr(data.error);
+  const btn = document.querySelector('#loginForm .btn-primary');
+  btn.disabled = true;
+  btn.textContent = '登入中...';
+  document.getElementById('authError').textContent = '';
 
-  currentUser = data;
-  currentPlan = data.plan;
-  localStorage.setItem('liveplus_user', JSON.stringify(data));
-  showDashboard();
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email, password})
+    });
+    const data = await res.json();
+    btn.disabled = false;
+    btn.textContent = '登入';
+    if (!data.success) return showErr(data.error);
+
+    currentUser = data;
+    currentPlan = data.plan;
+    localStorage.setItem('liveplus_user', JSON.stringify(data));
+    showDashboard();
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '登入';
+    showErr('網路錯誤，請稍後再試');
+  }
 }
 
 async function doRegister() {
@@ -37,22 +50,46 @@ async function doRegister() {
   const password = document.getElementById('regPassword').value;
   if (!name || !email || !password) return showErr('請填寫所有欄位');
 
-  const res = await fetch(`${API}/auth/register`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({name, email, password})
-  });
-  const data = await res.json();
-  if (!data.success) return showErr(data.error);
+  const btn = document.getElementById('regBtn');
+  btn.disabled = true;
+  btn.textContent = '註冊中...';
+  document.getElementById('authError').textContent = '';
 
-  currentUser = data;
-  currentPlan = data.plan;
-  localStorage.setItem('liveplus_user', JSON.stringify(data));
-  showDashboard();
+  try {
+    const res = await fetch(`${API}/auth/register`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, email, password})
+    });
+    const data = await res.json();
+    if (!data.success) {
+      btn.disabled = false;
+      btn.textContent = '註冊';
+      return showErr(data.error);
+    }
+
+    // 註冊成功，自動登入
+    currentUser = data;
+    currentPlan = data.plan;
+    localStorage.setItem('liveplus_user', JSON.stringify(data));
+    showSuccess('註冊成功！正在進入後台...');
+    setTimeout(() => showDashboard(), 500);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '註冊';
+    showErr('網路錯誤，請稍後再試');
+  }
 }
 
 function showErr(msg) {
   document.getElementById('authError').textContent = msg;
+  document.getElementById('authSuccess').style.display = 'none';
+}
+
+function showSuccess(msg) {
+  document.getElementById('authSuccess').textContent = msg;
+  document.getElementById('authSuccess').style.display = 'block';
+  document.getElementById('authError').textContent = '';
 }
 
 function logout() {
