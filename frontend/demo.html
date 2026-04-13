@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>直播加1 系統展示</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'PingFang TC', sans-serif;
+  background: #0f172a;
+  color: white;
+  overflow-x: hidden;
+}
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  background: radial-gradient(ellipse at top, #1e1b4b 0%, #0f172a 70%);
+}
+
+.logo-img { max-width: 180px; margin-bottom: 20px; }
+h1 { font-size: 52px; font-weight: bold; margin-bottom: 15px; }
+h1 span { background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { font-size: 22px; color: #94a3b8; margin-bottom: 40px; }
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 30px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.1);
+  border-color: #6366f1;
+}
+
+.feature-icon { font-size: 48px; margin-bottom: 15px; }
+.feature-card h3 { font-size: 20px; margin-bottom: 10px; color: #e2e8f0; }
+.feature-card p { font-size: 15px; color: #94a3b8; line-height: 1.6; }
+
+.demo-section {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.demo-section h2 {
+  font-size: 36px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.demo-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.demo-step {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.step-number {
+  background: linear-gradient(135deg, #6366f1, #764ba2);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.step-content h4 { font-size: 18px; margin-bottom: 5px; }
+.step-content p { color: #94a3b8; font-size: 14px; }
+
+.cta-section {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #1e1b4b, #0f172a);
+}
+
+.cta-section h2 { font-size: 36px; margin-bottom: 20px; }
+.cta-section p { color: #94a3b8; margin-bottom: 30px; font-size: 18px; }
+
+.btn-main {
+  background: linear-gradient(135deg, #6366f1, #764ba2);
+  color: white;
+  border: none;
+  padding: 18px 40px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.3s;
+  box-shadow: 0 8px 30px rgba(99,102,241,0.4);
+}
+
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,0.5); }
+
+.footer {
+  text-align: center;
+  padding: 30px;
+  color: #64748b;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<!-- 首頁 -->
+<section class="hero">
+  <img src="assets/logo.jpg" alt="愛直播" class="logo-img">
+  <h1>直播<span>加1</span></h1>
+  <p class="subtitle">FB/IG 直播留言自動收單系統<br>讓直播賣貨更簡單！</p>
+  
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>簡單又快速</h3>
+      <p>觀眾留言「+1」，點連結填資料，三步完成訂購</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <h3>訂單管理</h3>
+      <p>所有訂單一目了然，一鍵匯出 Excel 出貨</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎥</div>
+      <h3>多平台支援</h3>
+      <p>支援 Facebook、Instagram 直播</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💰</div>
+      <h3>免費試用</h3>
+      <p>免費版每月50單、10個商品，先試用再升級</p>
+    </div>
+  </div>
+</section>
+
+<!-- 操作流程 -->
+<section class="demo-section">
+  <h2>📋 如何使用</h2>
+  
+  <div class="demo-steps">
+    <div class="demo-step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <h4>賣家註冊登入</h4>
+        <p>建立帳號，進入專屬後台</p>
+      </div>
+    </div>
+    
+    <div class="demo-step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <h4>新增直播商品</h4>
+        <p>設定商品名稱、價格，系統產生直播專屬連結</p>
+      </div>
+    </div>
+    
+    <div class="demo-step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <h4>直播中展示連結</h4>
+        <p>當觀眾說「+1」或「想要」，把連結貼給他</p>
+      </div>
+    </div>
+    
+    <div class="demo-step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <h4>觀眾填寫資料</h4>
+        <p>觀眾點連結 → 填寫姓名/電話/地址 → 按送出</p>
+      </div>
+    </div>
+    
+    <div class="demo-step">
+      <div class="step-number">5</div>
+      <div class="step-content">
+        <h4>訂單完成！</h4>
+        <p>賣家在後台查看訂單，聯繫出貨</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>🚀 開始使用</h2>
+  <p>免費註冊，立即開始直播收單！</p>
+  <a href="https://live-plus1-production-ffb0.up.railway.app" class="btn-main" target="_blank">
+    前往直播加1 →
+  </a>
+</section>
+
+<!-- 底部 -->
+<footer class="footer">
+  <p>© 2026 直播加1 | 愛直播出品</p>
+</footer>
+
+</body>
+</html>
