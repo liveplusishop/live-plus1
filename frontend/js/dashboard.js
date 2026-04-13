@@ -1,5 +1,5 @@
 // 直播加1 - 賣家後台 JavaScript
-const API = 'http://localhost:5050/api';
+const API = window.location.origin + '/api';
 
 let currentUser = null;
 let currentPlan = 'free';

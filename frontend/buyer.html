@@ -146,7 +146,7 @@ textarea { height: 80px; resize: vertical; }
 
 <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
 <script>
-const API = 'http://localhost:5050/api';
+const API = window.location.origin + '/api';
 
 new Vue({
   el: '#app',
