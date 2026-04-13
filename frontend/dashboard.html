@@ -167,20 +167,93 @@
       <div class="section-header">
         <h2>⚙️ 帳戶設定</h2>
       </div>
-      <div class="panel">
-        <h3>我的方案</h3>
-        <div class="plan-info" id="planInfo">
-          <div class="plan-name">免費版</div>
-          <div class="plan-features">
-            <p>✅ 1個粉絲專頁</p>
-            <p>✅ 50筆訂單/月</p>
-            <p>✅ 10個商品</p>
-            <p>❌ 數據看板</p>
-            <p>❌ 黑名單</p>
-            <p>❌ 自動催款</p>
-          </div>
+      
+      <!-- 方案比較 -->
+      <div class="panel" style="margin-bottom: 20px;">
+        <h3>💰 方案比較</h3>
+        <div style="overflow-x: auto;">
+          <table class="data-table" style="min-width: 700px;">
+            <thead>
+              <tr>
+                <th style="text-align: left;">功能</th>
+                <th style="text-align: center; background: #f0f0f0;">🌱 免費版</th>
+                <th style="text-align: center; background: #e8f4ff;">🚀 進階版<br><span style="font-size: 12px; color: #666;">$299/月</span></th>
+                <th style="text-align: center; background: linear-gradient(135deg, #667eea, #764ba2); color: white;">💎 旗艦版<br><span style="font-size: 12px;">$599/月</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>📱 同時使用設備</td>
+                <td style="text-align: center;">1 台</td>
+                <td style="text-align: center; background: #e8f4ff;">1 台</td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);"><strong>3 台</strong></td>
+              </tr>
+              <tr>
+                <td>📦 每月訂單上限</td>
+                <td style="text-align: center;">50 單</td>
+                <td style="text-align: center; background: #e8f4ff;">500 單</td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);"><strong>無限</strong></td>
+              </tr>
+              <tr>
+                <td>🏪 商品數量</td>
+                <td style="text-align: center;">10 個</td>
+                <td style="text-align: center; background: #e8f4ff;">50 個</td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);"><strong>無限</strong></td>
+              </tr>
+              <tr>
+                <td>📊 數據報表</td>
+                <td style="text-align: center;">✅</td>
+                <td style="text-align: center; background: #e8f4ff;">✅</td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);">✅</td>
+              </tr>
+              <tr>
+                <td>📋 Excel 匯出</td>
+                <td style="text-align: center;">✅</td>
+                <td style="text-align: center; background: #e8f4ff;">✅</td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);">✅</td>
+              </tr>
+              <tr>
+                <td>🚫 黑名單管理</td>
+                <td style="text-align: center;">❌</td>
+                <td style="text-align: center; background: #e8f4ff;">✅</td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);">✅</td>
+              </tr>
+              <tr>
+                <td>🔔 自動催款</td>
+                <td style="text-align: center;">❌</td>
+                <td style="text-align: center; background: #e8f4ff;">✅</td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);">✅</td>
+              </tr>
+              <tr>
+                <td>🎯 優先客服</td>
+                <td style="text-align: center;">❌</td>
+                <td style="text-align: center; background: #e8f4ff;">✅</td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);">✅</td>
+              </tr>
+              <tr>
+                <td>🔗 第三方整合</td>
+                <td style="text-align: center;">❌</td>
+                <td style="text-align: center; background: #e8f4ff;">❌</td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);">✅</td>
+              </tr>
+              <tr style="background: #f9f9f9;">
+                <td><strong>價格</strong></td>
+                <td style="text-align: center;"><strong>$0/月</strong></td>
+                <td style="text-align: center; background: #e8f4ff;"><strong>$299/月</strong></td>
+                <td style="text-align: center; background: rgba(102,126,234,0.2);"><strong>$599/月</strong></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <button class="btn-upgrade-large" onclick="showUpgrade()">升級進階版 $599/月</button>
+        
+        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-secondary" onclick="showUpgrade()">🚀 升級進階版 $299/月</button>
+          <button class="btn-primary" onclick="showUpgrade()">💎 升級旗艦版 $599/月</button>
+        </div>
+        
+        <p style="color: #888; font-size: 13px; margin-top: 15px;">
+          💡 提示：點擊上方按鈕選擇方案，支援信用卡/LINE Pay 付款
+        </p>
       </div>
     </div>
   </main>
