@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <!--
   直播加1 - 使用指南
-  版本：v1.0 (2026-04-14)
-  說明：初始版本
+  版本：v1.1 (2026-04-14)
+  說明：新增自動列印安裝指南
 -->
 <html lang="zh-TW">
 <head>
@@ -155,7 +155,86 @@
     </div>
 
     <div class="section">
-      <h2>❓ 五、常見問題</h2>
+      <h2>🖨️ 五、自動列印功能（可選）</h2>
+      <p>想要有新訂單時自動列印出貨單嗎？這個功能可以幫你！</p>
+
+      <h3>📥 下載自動列印程式</h3>
+      <div class="demo-box">
+        <strong>下載位置：</strong><br>
+        聯繫 LINE 客服 或 系統管理員 取得下載連結<br><br>
+        <strong>包含檔案：</strong><br>
+        <code>auto_print.py</code> - 主程式<br>
+        <code>啟動.bat</code> - 啟動腳本<br>
+        <code>README.md</code> - 詳細說明
+      </div>
+
+      <h3>📋 安裝步驟</h3>
+
+      <h4>步驟 1：安裝 Python（必須）</h4>
+      <p>Python 是程式的執行環境，必須先安裝。</p>
+      <table>
+        <tr><th>下載方式</th><th>連結/方式</th><th>說明</th></tr>
+        <tr>
+          <td>方式一</td>
+          <td><a href="https://www.python.org/downloads/windows/" target="_blank">點我下載</a></td>
+          <td>官網下載，適合進階用戶</td>
+        </tr>
+        <tr>
+          <td>方式二</td>
+          <td>Microsoft Store 搜尋「Python」</td>
+          <td>最簡單，點一下就裝好</td>
+        </tr>
+      </table>
+      <div class="demo-box">
+        <strong>⚠️ 安裝時一定要勾選：</strong><br>
+        ☑️ Add Python to PATH（加入路徑）
+      </div>
+
+      <h4>步驟 2：放置程式檔案</h4>
+      <p>建議建立一個資料夾存放：</p>
+      <div class="demo-box">
+        <code>C:\直播加1\<br>
+        ├── auto_print.py<br>
+        ├── 啟動.bat<br>
+        └── README.md</code>
+      </div>
+
+      <h4>步驟 3：雙擊啟動</h4>
+      <div class="step"><div class="step-num">1</div><div class="step-content"><h4>雙擊「啟動.bat」</h4>等待程式視窗開啟</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><h4>選擇印表機</h4>從下拉選單選擇你的印表機</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><h4>點「開始監控」</h4>有新訂單就會自動列印</div></div>
+
+      <h3>⚙️ 自動列印工作流程</h3>
+      <div class="flow">
+        <div class="flow-box">🎙️ 直播<br>觀眾留言+1</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">📡 系統<br>接收訂單</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">🔔 電腦<br>通知提醒</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">🖨️ 自動<br>列印出貨單</div>
+      </div>
+
+      <h3>🔧 常見問題</h3>
+      <table>
+        <tr><th>問題</th><th>解決方式</th></tr>
+        <tr>
+          <td>雙擊沒反應</td>
+          <td>確認 Python 已安裝並加入 PATH</td>
+        </tr>
+        <tr>
+          <td>找不到印表機</td>
+          <td>確認印表機已連接並設為預設印表機</td>
+        </tr>
+        <tr>
+          <td>程式需要網路嗎</td>
+          <td>需要，電腦需保持網路連線</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>❓ 六、常見問題</h2>
       
       <div class="faq">
         <div class="faq-q">Q：Access Token 過期怎麼辦？</div>
@@ -176,6 +255,21 @@
         <div class="faq-q">Q：留言識別不出來怎麼辦？</div>
         <div class="faq-a">A：檢查 FB 授權是否正確，或手動新增關鍵字（如「+1」、「要」）</div>
       </div>
+
+      <div class="faq">
+        <div class="faq-q">Q：自動列印需要什麼設備？</div>
+        <div class="faq-a">A：需要一台 Windows 電腦（10/11）和印表機</div>
+      </div>
+
+      <div class="faq">
+        <div class="faq-q">Q：可以用手機自動列印嗎？</div>
+        <div class="faq-a">A：手機無法直接控制印表機，需要電腦。小程式在辦公室電腦背景執行即可</div>
+      </div>
+
+      <div class="faq">
+        <div class="faq-q">Q：如何取得自動列印程式？</div>
+        <div class="faq-a">A：聯繫 LINE 客服 或 系統管理員 取得下載連結</div>
+      </div>
     </div>
 
     <div class="section">
@@ -188,6 +282,10 @@
         <div class="link-card">
           <h4>📄 展示頁</h4>
           <a href="demo.html" target="_blank">系統介紹展示</a>
+        </div>
+        <div class="link-card">
+          <h4>💰 方案比較</h4>
+          <a href="pricing.html" target="_blank">免費/進階/旗艦版</a>
         </div>
         <div class="link-card">
           <h4>📱 買家填單</h4>
