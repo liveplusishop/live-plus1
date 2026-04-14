@@ -129,6 +129,10 @@
       <div class="section-header">
         <h2>🧾 訂單管理</h2>
         <div class="header-actions">
+          <!-- 自動監控開關 -->
+          <button id="autoPrintToggle" class="btn-secondary" onclick="toggleAutoPrint()" style="background:#e2e8f0;">
+            🔔 自動監控：關
+          </button>
           <select id="orderStatusFilter" onchange="loadOrders()">
             <option value="">全部狀態</option>
             <option value="pending">待處理</option>
@@ -144,6 +148,22 @@
           <button class="btn-secondary" onclick="loadOrders()">🔄 刷新</button>
         </div>
       </div>
+      
+      <!-- 自動列印通知區 -->
+      <div id="printNotification" class="panel" style="display:none; background:#fef3c7; border:2px solid #f59e0b; margin-bottom:20px;">
+        <div style="display:flex; align-items:center; gap:15px;">
+          <div style="font-size:48px;">🔔</div>
+          <div style="flex:1;">
+            <h3 style="color:#b45309; margin:0;">新訂單來了！</h3>
+            <p id="newOrderInfo" style="margin:5px 0 0; color:#92400e;"></p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-primary" onclick="printLastOrder()" style="background:#f59e0b;">🖨️ 立即列印</button>
+            <button class="btn-secondary" onclick="dismissNotification()">✕</button>
+          </div>
+        </div>
+      </div>
+      
       <table class="data-table" id="ordersTable">
         <tr><th>訂單編號</th><th>買家</th><th>商品</th><th>數量</th><th>金額</th><th>狀態</th><th>時間</th><th>操作</th></tr>
       </table>
@@ -335,6 +355,234 @@
   </div>
 </div>
 
+<!-- 出貨單列印模板 -->
+<div id="printArea" style="display:none;">
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #printContent, #printContent * { visibility: visible; }
+      #printContent { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+    .print-slip {
+      width: 280px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      border: 2px solid #000;
+      background: #fff;
+    }
+    .print-slip h2 {
+      text-align: center;
+      margin: 0 0 10px;
+      padding-bottom: 10px;
+      border-bottom: 2px dashed #000;
+    }
+    .print-slip .row { margin: 8px 0; }
+    .print-slip .label { font-weight: bold; }
+    .print-slip .divider { border-top: 1px dashed #000; margin: 10px 0; }
+    .print-slip .total { font-size: 18px; font-weight: bold; text-align: right; }
+    .print-slip .footer { text-align: center; margin-top: 15px; padding-top: 10px; border-top: 2px dashed #000; }
+  </style>
+  <div id="printContent" class="print-slip">
+    <h2>📦 直播加1 出貨單</h2>
+    <div class="row"><span class="label">訂單編號：</span><span id="printOrderId"></span></div>
+    <div class="row"><span class="label">日　　期：</span><span id="printDate"></span></div>
+    <div class="row"><span class="label">直播名稱：</span><span id="printStream"></span></div>
+    <div class="divider"></div>
+    <div class="row"><span class="label">商品名稱：</span><span id="printProduct"></span></div>
+    <div class="row"><span class="label">規　　格：</span><span id="printSpecs"></span></div>
+    <div class="row"><span class="label">數　　量：</span><span id="printQty"></span></div>
+    <div class="row"><span class="label">單　　價：</span><span id="printPrice"></span></div>
+    <div class="divider"></div>
+    <div class="row"><span class="label">收件人：</span><span id="printBuyer"></span></div>
+    <div class="row"><span class="label">電　話：</span><span id="printPhone"></span></div>
+    <div class="row"><span class="label">地　址：</span><span id="printAddress"></span></div>
+    <div class="row"><span class="label">備　註：</span><span id="printNote"></span></div>
+    <div class="divider"></div>
+    <div class="total">合計：$<span id="printTotal"></span></div>
+    <div class="footer">
+      <p>━━━━━━━━━━━━━━━</p>
+      <p>直播加1 自動收單系統</p>
+      <p>請妥善保管此單據</p>
+    </div>
+  </div>
+</div>
+
 <script src="js/dashboard.js"></script>
+<script>
+// ========== 自動列印功能 ==========
+let autoPrintEnabled = false;
+let autoPrintInterval = null;
+let lastOrderId = null;
+let lastOrderData = null;
+
+// 聲音提示（使用 Web Audio API）
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playNotificationSound() {
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  oscillator.frequency.value = 880; // A5
+  oscillator.type = 'sine';
+  gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+  oscillator.start(audioCtx.currentTime);
+  oscillator.stop(audioCtx.currentTime + 0.2);
+  setTimeout(() => {
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.frequency.value = 1100; // C6
+    osc2.type = 'sine';
+    gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    osc2.start(audioCtx.currentTime);
+    osc2.stop(audioCtx.currentTime + 0.3);
+  }, 250);
+}
+
+// 切換自動監控
+function toggleAutoPrint() {
+  autoPrintEnabled = !autoPrintEnabled;
+  const btn = document.getElementById('autoPrintToggle');
+  
+  if (autoPrintEnabled) {
+    btn.style.background = '#22c55e';
+    btn.style.color = 'white';
+    btn.textContent = '🔔 自動監控：開';
+    lastOrderId = getLastOrderIdFromTable();
+    autoPrintInterval = setInterval(checkForNewOrders, 5000); // 每5秒檢查一次
+    showToast('自動監控已開啟', 'success');
+  } else {
+    btn.style.background = '#e2e8f0';
+    btn.style.color = '#475569';
+    btn.textContent = '🔔 自動監控：關';
+    if (autoPrintInterval) clearInterval(autoPrintInterval);
+    showToast('自動監控已關閉', 'info');
+  }
+}
+
+// 從表格取得最後一筆訂單 ID
+function getLastOrderIdFromTable() {
+  const rows = document.querySelectorAll('#ordersTable tr');
+  if (rows.length > 1) {
+    const lastRow = rows[1];
+    const firstCell = lastRow.cells[0];
+    if (firstCell) {
+      const code = firstCell.querySelector('code');
+      return code ? code.textContent : firstCell.textContent;
+    }
+  }
+  return null;
+}
+
+// 檢查新訂單
+async function checkForNewOrders() {
+  if (!currentUser || !autoPrintEnabled) return;
+  
+  const status = document.getElementById('orderStatusFilter').value;
+  let url = `${API}/orders?seller_id=${currentUser.seller_id}&limit=1`;
+  if (status) url += `&status=${status}`;
+  
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    if (data.orders && data.orders.length > 0) {
+      const newestOrder = data.orders[0];
+      
+      if (lastOrderId && newestOrder.id !== lastOrderId) {
+        // 發現新訂單！
+        lastOrderData = newestOrder;
+        showNewOrderNotification(newestOrder);
+        playNotificationSound();
+        lastOrderId = newestOrder.id;
+      } else if (!lastOrderId) {
+        lastOrderId = newestOrder.id;
+      }
+    }
+  } catch(e) {
+    console.log('檢查新訂單失敗', e);
+  }
+}
+
+// 顯示新訂單通知
+function showNewOrderNotification(order) {
+  const notification = document.getElementById('printNotification');
+  const info = document.getElementById('newOrderInfo');
+  
+  const buyer = order.buyer_name || order.fb_user_name || '未知買家';
+  const amount = order.total_price || 0;
+  
+  info.textContent = `${buyer} - $${amount.toLocaleString()} - ${order.created_at?.substring(0, 16) || ''}`;
+  notification.style.display = 'block';
+  
+  // 自動列印（如果設定的話）
+  setTimeout(() => printOrder(order), 1000);
+}
+
+// 解散通知
+function dismissNotification() {
+  document.getElementById('printNotification').style.display = 'none';
+}
+
+// 列印指定訂單
+function printOrder(order) {
+  document.getElementById('printOrderId').textContent = order.id;
+  document.getElementById('printDate').textContent = order.created_at ? order.created_at.substring(0, 10) : new Date().toISOString().substring(0, 10);
+  document.getElementById('printStream').textContent = order.stream_title || '-';
+  document.getElementById('printProduct').textContent = order.product_name || '-';
+  document.getElementById('printSpecs').textContent = order.specs || '-';
+  document.getElementById('printQty').textContent = order.quantity || 1;
+  document.getElementById('printPrice').textContent = (order.unit_price || 0).toLocaleString();
+  document.getElementById('printBuyer').textContent = order.buyer_name || '-';
+  document.getElementById('printPhone').textContent = order.buyer_phone || '-';
+  document.getElementById('printAddress').textContent = order.buyer_address || '-';
+  document.getElementById('printNote').textContent = order.note || '-';
+  document.getElementById('printTotal').textContent = (order.total_price || 0).toLocaleString();
+  
+  // 顯示列印區
+  document.getElementById('printArea').style.display = 'block';
+  
+  // 列印
+  window.print();
+  
+  // 隱藏列印區
+  setTimeout(() => {
+    document.getElementById('printArea').style.display = 'none';
+  }, 100);
+}
+
+// 列印最後一筆新訂單
+function printLastOrder() {
+  if (lastOrderData) {
+    printOrder(lastOrderData);
+    dismissNotification();
+  } else {
+    alert('沒有可列印的訂單');
+  }
+}
+
+// Toast 提示
+function showToast(message, type) {
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed; top: 20px; right: 20px; z-index: 9999;
+    padding: 12px 20px; border-radius: 8px;
+    background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#64748b'};
+    color: white; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease;
+  `;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+</script>
+<style>
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+</style>
 </body>
 </html>

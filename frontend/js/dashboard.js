@@ -380,15 +380,17 @@ async function loadOrders() {
     const statusClass = `status-${o.status}`;
     const statusText = {'pending':'待處理','paid':'已付款','shipped':'已出貨','completed':'已完成','cancelled':'已取消'}[o.status] || o.status;
     const buyerInfo = o.buyer_name || o.fb_user_name || '-';
+    const orderData = encodeURIComponent(JSON.stringify(o));
     t.innerHTML += `<tr>
       <td><code style="font-size:12px">${o.id}</code></td>
       <td>${buyerInfo}</td>
-      <td>-</td>
+      <td>${o.product_name || '-'}</td>
       <td>${o.quantity}</td>
       <td>$${o.total_price?.toLocaleString() || 0}</td>
       <td><span class="status-tag ${statusClass}">${statusText}</span></td>
       <td style="font-size:12px;color:#64748b">${o.created_at?.substring(0,16) || '-'}</td>
       <td>
+        <button class="action-btn" onclick="printOrderFromData('${orderData}')" title="列印出貨單">🖨️</button>
         <button class="action-btn" onclick="editOrder('${o.id}','${(o.buyer_name||'').replace(/'/g,"&#39;")}','${(o.buyer_phone||'').replace(/'/g,"&#39;")}','${(o.buyer_address||'').replace(/'/g,"&#39;")}','${o.status}','${(o.note||'').replace(/'/g,"&#39;")}')">編輯</button>
         <button class="action-btn danger" onclick="delOrder('${o.id}')">刪除</button>
       </td>
@@ -448,6 +450,66 @@ function exportOrders() {
   let url = `${API}/orders/export?seller_id=${currentUser.seller_id}`;
   if (streamId) url += `&stream_id=${streamId}`;
   window.open(url, '_blank');
+}
+
+// 從資料列印訂單（用於訂單表格中的列印按鈕）
+function printOrderFromData(dataStr) {
+  try {
+    const order = JSON.parse(decodeURIComponent(dataStr));
+    // 呼叫全域的 printOrder 函數
+    if (typeof window.printOrder === 'function') {
+      window.printOrder(order);
+    } else {
+      // 如果全域函數還沒載入，直接執行
+      printOrderDirect(order);
+    }
+  } catch(e) {
+    alert('無法列印此訂單');
+    console.error(e);
+  }
+}
+
+// 直接列印（不依賴 DOM）
+function printOrderDirect(order) {
+  const printContent = `
+    <div style="width:280px;padding:15px;font-family:'Courier New',monospace;font-size:14px;border:2px solid #000;">
+      <h2 style="text-align:center;margin:0 0 10px;padding-bottom:10px;border-bottom:2px dashed #000;">📦 直播加1 出貨單</h2>
+      <div style="margin:8px 0;"><strong>訂單編號：</strong>${order.id}</div>
+      <div style="margin:8px 0;"><strong>日　　期：</strong>${order.created_at ? order.created_at.substring(0, 10) : new Date().toISOString().substring(0, 10)}</div>
+      <div style="margin:8px 0;"><strong>直播名稱：</strong>${order.stream_title || '-'}</div>
+      <hr style="border-top:1px dashed #000;margin:10px 0;">
+      <div style="margin:8px 0;"><strong>商品名稱：</strong>${order.product_name || '-'}</div>
+      <div style="margin:8px 0;"><strong>規　　格：</strong>${order.specs || '-'}</div>
+      <div style="margin:8px 0;"><strong>數　　量：</strong>${order.quantity || 1}</div>
+      <div style="margin:8px 0;"><strong>單　　價：</strong>$${(order.unit_price || 0).toLocaleString()}</div>
+      <hr style="border-top:1px dashed #000;margin:10px 0;">
+      <div style="margin:8px 0;"><strong>收件人：</strong>${order.buyer_name || '-'}</div>
+      <div style="margin:8px 0;"><strong>電　話：</strong>${order.buyer_phone || '-'}</div>
+      <div style="margin:8px 0;"><strong>地　址：</strong>${order.buyer_address || '-'}</div>
+      <div style="margin:8px 0;"><strong>備　註：</strong>${order.note || '-'}</div>
+      <hr style="border-top:1px dashed #000;margin:10px 0;">
+      <div style="font-size:18px;font-weight:bold;text-align:right;">合計：$${(order.total_price || 0).toLocaleString()}</div>
+      <div style="text-align:center;margin-top:15px;padding-top:10px;border-top:2px dashed #000;">
+        <p>━━━━━━━━━━━━━━━</p>
+        <p>直播加1 自動收單系統</p>
+        <p>請妥善保管此單據</p>
+      </div>
+    </div>
+  `;
+  
+  const printWindow = window.open('', '_blank', 'width=350,height=600');
+  printWindow.document.write(`
+    <html>
+    <head>
+      <title>出貨單 - ${order.id}</title>
+      <style>body{margin:0;padding:20px;}</style>
+    </head>
+    <body>${printContent}
+    <script>window.onload=function(){window.print();}<\/script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
 
 // ========== 黑名單 ==========
